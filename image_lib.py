@@ -1,8 +1,13 @@
 '''
 Library of useful functions for working with images.
 '''
+import requests
+
 def main():
     # TODO: Add code to test the functions in this module
+    imageData = download_image('https://apod.nasa.gov/apod/image/0202/m78_aao_big.jpg')
+    imagePath = r'C:\test\image.png'
+    save_image_file(imageData, imagePath)
     return
 
 def download_image(image_url):
@@ -17,7 +22,8 @@ def download_image(image_url):
         bytes: Binary image data, if succcessful. None, if unsuccessful.
     """
     # TODO: Complete function body
-    return
+    img = requests.get(image_url)
+    return img.content if img else None
 
 def save_image_file(image_data, image_path):
     """Saves image data as a file on disk.
@@ -32,7 +38,13 @@ def save_image_file(image_data, image_path):
         bool: True, if succcessful. False, if unsuccessful
     """
     # TODO: Complete function body
-    return
+    try:
+        with open(image_path, 'wb') as file:
+            file.write(image_data)
+    except Exception as e:
+        print(e)
+        return False
+    return True
 
 def set_desktop_background_image(image_path):
     """Sets the desktop background image to a specific image.

@@ -15,6 +15,8 @@ from datetime import date
 import os
 import image_lib
 from sys import argv
+import apod_api
+import requests
 
 # Full paths of the image cache folder and database
 # - The image cache directory is a subdirectory of the specified parent directory.
@@ -52,16 +54,16 @@ def get_apod_date():
     Returns:
         date: APOD date
     """
-    # TODO: Complete function body
+    # TODO: Complete function body TEST
     try:
         inputDate = argv[1]
     except IndexError:
         inputDate = date.today() 
     # Hint: The following line of code shows how to convert and ISO-formatted date string to a date object
     try:
-        apod_date = date.fromisoformat(inputDate)
+        apod_date = date.fromisoformat(str(inputDate))
     except Exception as e:
-        print(e)
+        print(f'Error: {e}')
         quit()
     if apod_date > date.today():
         print("Error: APOD date cannot be in the future")
@@ -73,8 +75,14 @@ def init_apod_cache():
     - Creating the image cache directory if it does not already exist,
     - Creating the image cache database if it does not already exist.
     """
-    # TODO: Create the image cache directory if it does not already exist
+    #Create the image cache directory if it does not already exist
+    try:
+        os.mkdir(image_cache_dir)
+        print(f"Image cache directory: {image_cache_dir}")
+    except:
+        print("Image cache dir already exists")
     # TODO: Create the DB if it does not already exist
+        
     return
 
 def add_apod_to_cache(apod_date):
@@ -94,9 +102,13 @@ def add_apod_to_cache(apod_date):
     print("APOD date:", apod_date.isoformat())
     # TODO: Download the APOD information from the NASA API
     # Hint: Use a function from apod_api.py 
+    apodInfo = apod_api.get_apod_info(apod_date)
 
     # TODO: Download the APOD image
     # Hint: Use a function from image_lib.py 
+    imageURL = apod_api.get_apod_image_url()
+    imgData = image_lib.download_image(imageURL)
+
 
     # TODO: Check whether the APOD already exists in the image cache
     # Hint: Use the get_apod_id_from_db() function below
@@ -104,6 +116,8 @@ def add_apod_to_cache(apod_date):
     # TODO: Save the APOD file to the image cache directory
     # Hint: Use the determine_apod_file_path() function below to determine the image file path
     # Hint: Use a function from image_lib.py to save the image file
+    imgPath = f'{image_cache_dir}'
+    image_lib.save_image_file(imgData, imgPath)
 
     # TODO: Add the APOD information to the DB
     # Hint: Use the add_apod_to_db() function below

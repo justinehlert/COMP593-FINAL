@@ -1,9 +1,16 @@
 '''
 Library for interacting with NASA's Astronomy Picture of the Day API.
 '''
+import requests
+
+NASAApiUrl = 'https://api.nasa.gov/planetary/apod'
+APIkey = 'QrB8aDPqGLjRIbCSojF51r16h7i4I3OeYSeirm4p'
 
 def main():
     # TODO: Add code to test the functions in this module
+    apod = get_apod_info('2002-02-11')
+
+    apodURL = get_apod_image_url(apod)
     return
 
 def get_apod_info(apod_date):
@@ -16,10 +23,18 @@ def get_apod_info(apod_date):
     Returns:
         dict: Dictionary of APOD info, if successful. None if unsuccessful
     """
-    # TODO: Complete the function body
+    #Complete the function body
     # Hint: The APOD API uses query string parameters: https://requests.readthedocs.io/en/latest/user/quickstart/#passing-parameters-in-urls
     # Hint: Set the 'thumbs' parameter to True so the info returned for video APODs will include URL of the video thumbnail image 
-    return
+    payload = {'api_key': APIkey, 'date': apod_date, 'thumbs': True}
+    try:
+        r = requests.get(NASAApiUrl, params=payload)
+        print(f"Getting {apod_date} APOD information from NASA... Success")
+    except Exception as e:
+        print(f"Getting {apod_date} APOD information from NASA... Failed")
+        print(e)
+        quit()
+    return r.json()
 
 def get_apod_image_url(apod_info_dict):
     """Gets the URL of the APOD image from the dictionary of APOD information.
@@ -34,8 +49,17 @@ def get_apod_image_url(apod_info_dict):
         str: APOD image URL
     """
     # TODO: Complete the function body
+    if apod_info_dict['media_type'] == 'image':
+        try:
+            url = apod_info_dict['hdurl']
+        except KeyError:
+            url = apod_info_dict['url']
+    else:
+        url = apod_info_dict['thumbnail_url']
+    print(f"APOD Title: {apod_info_dict['title']}")
+    print(f"APOD URL: {url}")
     # Hint: The APOD info dictionary includes a key named 'media_type' that indicates whether the APOD is an image or video
-    return
+    return url
 
 if __name__ == '__main__':
     main()
