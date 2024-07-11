@@ -14,6 +14,7 @@ Parameters:
 from datetime import date
 import os
 import image_lib
+from sys import argv
 
 # Full paths of the image cache folder and database
 # - The image cache directory is a subdirectory of the specified parent directory.
@@ -52,8 +53,19 @@ def get_apod_date():
         date: APOD date
     """
     # TODO: Complete function body
+    try:
+        inputDate = argv[1]
+    except IndexError:
+        inputDate = date.today() 
     # Hint: The following line of code shows how to convert and ISO-formatted date string to a date object
-    apod_date = date.fromisoformat('2022-12-25')
+    try:
+        apod_date = date.fromisoformat(inputDate)
+    except Exception as e:
+        print(e)
+        quit()
+    if apod_date > date.today():
+        print("Error: APOD date cannot be in the future")
+        quit()
     return apod_date
 
 def init_apod_cache():
