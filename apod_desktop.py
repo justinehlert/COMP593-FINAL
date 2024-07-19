@@ -88,7 +88,7 @@ def init_apod_cache():
         cur = con.cursor()
 
         create_tbl_query = """
-        CREATE TABLE IF NOT EXISTS people
+        CREATE TABLE IF NOT EXISTS apod
         (
             id INTEGER PRIMARY KEY,
             title TEXT NOT NULL,
@@ -101,6 +101,7 @@ def init_apod_cache():
 
         con.commit()
         con.close()
+
     except FileExistsError:
         print("Image cache DB already exists")
     return
@@ -156,7 +157,37 @@ def add_apod_to_db(title, explanation, file_path, sha256):
         int: The ID of the newly inserted APOD record, if successful. Zero, if unsuccessful       
     """
     # TODO: Complete function body
-    return 0
+    con = sqlite3.connect(image_cache_db)
+    cur = con.cursor()
+
+    add_image_query = """
+        INSERT INTO apod
+        (
+        title,
+        info,
+        filePath,
+        sha256
+        )
+        VALUES (?, ?, ?, ?);
+        """
+    newImage = (  
+        title,
+        explanation,
+        file_path,
+        sha256
+    )
+    try:
+        cur.execute(add_image_query, newImage)
+    except Exception as err:
+        print(err)
+        return 0
+    
+    con.commit()
+    con.close()    
+
+    cur.execute(f"SELECT id FROM apod WHERE title = {title}")
+    imageID = cur.fetchall()
+    return imageID
 
 def get_apod_id_from_db(image_sha256):
     """Gets the record ID of the APOD in the cache having a specified SHA-256 hash value
@@ -170,6 +201,8 @@ def get_apod_id_from_db(image_sha256):
         int: Record ID of the APOD in the image cache DB, if it exists. Zero, if it does not.
     """
     # TODO: Complete function body
+    
+
     return 0
 
 def determine_apod_file_path(image_title, image_url):
