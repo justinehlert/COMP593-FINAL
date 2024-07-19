@@ -17,6 +17,7 @@ import image_lib
 from sys import argv
 import apod_api
 import requests
+import sqlite3
 
 # Full paths of the image cache folder and database
 # - The image cache directory is a subdirectory of the specified parent directory.
@@ -79,10 +80,29 @@ def init_apod_cache():
     try:
         os.mkdir(image_cache_dir)
         print(f"Image cache directory: {image_cache_dir}")
-    except:
+    except FileExistsError:
         print("Image cache dir already exists")
     # TODO: Create the DB if it does not already exist
-        
+    try:
+        con = sqlite3.connect(image_cache_db)
+        cur = con.cursor()
+
+        create_tbl_query = """
+        CREATE TABLE IF NOT EXISTS people
+        (
+            id INTEGER PRIMARY KEY,
+            title TEXT NOT NULL,
+            info TEXT NOT NULL,
+            filePath TEXT NOT NULL,
+            sha256 TEXT NOT NULL
+        );
+        """
+        cur.execute(create_tbl_query)
+
+        con.commit()
+        con.close()
+    except FileExistsError:
+        print("Image cache DB already exists")
     return
 
 def add_apod_to_cache(apod_date):
@@ -116,7 +136,7 @@ def add_apod_to_cache(apod_date):
     # TODO: Save the APOD file to the image cache directory
     # Hint: Use the determine_apod_file_path() function below to determine the image file path
     # Hint: Use a function from image_lib.py to save the image file
-    imgPath = f'{image_cache_dir}'
+    imgPath = determine_apod_file_path()
     image_lib.save_image_file(imgData, imgPath)
 
     # TODO: Add the APOD information to the DB
@@ -179,6 +199,8 @@ def determine_apod_file_path(image_title, image_url):
     """
     # TODO: Complete function body
     # Hint: Use regex and/or str class methods to determine the filename.
+
+
     return
 
 def get_apod_info(image_id):
