@@ -22,7 +22,11 @@ def download_image(image_url):
         bytes: Binary image data, if succcessful. None, if unsuccessful.
     """
     # TODO: Complete function body
+    
     img = requests.get(image_url)
+
+    if img:
+        print("Downloading iamge from" + image_url + " ...success")    
     return img.content if img else None
 
 def save_image_file(image_data, image_path):
