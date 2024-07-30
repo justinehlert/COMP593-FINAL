@@ -2,12 +2,14 @@
 Library of useful functions for working with images.
 '''
 import requests
+import ctypes
 
 def main():
     # TODO: Add code to test the functions in this module
     imageData = download_image('https://apod.nasa.gov/apod/image/0202/m78_aao_big.jpg')
     imagePath = r'C:\test\image.png'
     save_image_file(imageData, imagePath)
+    set_desktop_background_image(imagePath)
     return
 
 def download_image(image_url):
@@ -60,7 +62,19 @@ def set_desktop_background_image(image_path):
         bytes: True, if succcessful. False, if unsuccessful        
     """
     # TODO: Complete function body
-    return
+        # Define the SPI_SETDESKWALLPAPER constant
+    SPI_SETDESKWALLPAPER = 20
+    # Define the SPIF_UPDATEINIFILE and SPIF_SENDCHANGE flags
+    SPIF_UPDATEINIFILE = 1
+    SPIF_SENDCHANGE = 2
+
+    try:
+        ctypes.windll.user32.SystemParametersInfoW(SPI_SETDESKWALLPAPER, 0, image_path, SPIF_UPDATEINIFILE | SPIF_SENDCHANGE)
+    except Exception as err:
+        print('Set Desktop Background Error: ' + err)
+        return False
+
+    return True
 
 def scale_image(image_size, max_size=(800, 600)):
     """Calculates the dimensions of an image scaled to a maximum width
