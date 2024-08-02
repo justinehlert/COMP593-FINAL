@@ -27,6 +27,7 @@ import re
 script_dir = os.path.dirname(os.path.abspath(__file__))
 image_cache_dir = os.path.join(script_dir, 'images')
 image_cache_db = os.path.join(image_cache_dir, 'image_cache.db')
+NASAIcon = os.path.join(script_dir, 'nasa_logo_icon_170926-288813334.png')
 
 def main():
     ## DO NOT CHANGE THIS FUNCTION ##
@@ -315,12 +316,11 @@ def get_all_apod_titles():
     """
     # TODO: Complete function body
     # NOTE: This function is only needed to support the APOD viewer GUI
-    con = sqlite3.connect(image_cache_db)
-    cur = con.cursor()
-    
-    cur.execute("SELECT title from apod")
-    titles = cur.fetchall()
-    con.close()
+    titles = []
+    for file in os.listdir(image_cache_dir):
+        full_path = os.path.join(image_cache_dir, file)
+        if os.path.isfile(full_path) and not full_path.endswith('.db'):
+            titles.append(file)
     return titles
 
 if __name__ == '__main__':

@@ -69,6 +69,7 @@ def set_desktop_background_image(image_path):
     SPIF_SENDCHANGE = 2
 
     try:
+        print(f'Setting desktop to {image_path}')
         ctypes.windll.user32.SystemParametersInfoW(SPI_SETDESKWALLPAPER, 0, image_path, SPIF_UPDATEINIFILE | SPIF_SENDCHANGE)
     except Exception as err:
         print('Set Desktop Background Error: ' + err)
