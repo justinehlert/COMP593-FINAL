@@ -229,6 +229,7 @@ def get_apod_id_from_db(image_sha256):
         return 0
     imageID = cur.fetchall()
     con.close()
+    imageID = imageID[0]
 
     if imageID:
         return imageID[0]
