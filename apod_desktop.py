@@ -229,12 +229,14 @@ def get_apod_id_from_db(image_sha256):
         return 0
     imageID = cur.fetchall()
     con.close()
-    imageID = imageID[0]
+    try:
+        imageID = imageID[0]
+    except:
+        print('No file in database with this ID')
+        list = []
+        return list.append(0)
+    return imageID[0]
 
-    if imageID:
-        return imageID[0]
-    else:
-        return 0
 
 def determine_apod_file_path(image_title, image_url):
     """Determines the path at which a newly downloaded APOD image must be 

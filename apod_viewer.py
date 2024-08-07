@@ -89,6 +89,7 @@ def download_image():
     selected_date = date_entry.get_date()
     apod_desktop.add_apod_to_cache(selected_date)
     filesList = apod_desktop.get_all_apod_titles()
+    cbox_images['values'] = filesList
     return
 
 frm_img = Frame(root, relief='groove')
