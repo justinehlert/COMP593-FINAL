@@ -11,7 +11,7 @@ Usage:
 Parameters:
   apod_date = APOD date (format: YYYY-MM-DD)
 """
-from datetime import date
+from datetime import date, datetime
 import hashlib as hash
 import os
 import image_lib
@@ -129,8 +129,21 @@ def add_apod_to_cache(apod_date):
     print("APOD date:", apod_date.isoformat())
     # TODO: Download the APOD information from the NASA API
     # Hint: Use a function from apod_api.py 
-    apodInfo = apod_api.get_apod_info(apod_date)
 
+
+    firstDate = date.fromisoformat('1995-06-16')
+    if type(apod_date) is str:
+        apodDate = date.fromisoformat(str(apod_date))
+    else:
+        apodDate = apod_date
+
+    if apodDate < firstDate :
+        print('Error: Date out of range, Too early')
+        return 0
+    if apodDate > date.today():
+        print('Error: Date out of range, Too late')
+        return 0
+    apodInfo = apod_api.get_apod_info(apodDate)
     # TODO: Download the APOD image
     # Hint: Use a function from image_lib.py 
     imageURL = apod_api.get_apod_image_url(apodInfo)
@@ -142,7 +155,10 @@ def add_apod_to_cache(apod_date):
     sqlID = get_apod_id_from_db(imgHash)
     if sqlID:
         print('APOD image is already in cache')
-        return sqlID[0]
+        try:
+            return sqlID[0]
+        except TypeError:
+            return sqlID       
 
     # TODO: Save the APOD file to the image cache directory
     # Hint: Use the determine_apod_file_path() function below to determine the image file path
